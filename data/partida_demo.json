@@ -1,0 +1,18 @@
+{
+  "activePlayer": {
+    "riotId": "JogadorDemo#BR1"
+  },
+  "allPlayers": [
+    {
+      "riotId": "OutroJogador#BR1",
+      "championName": "Ahri"
+    },
+    {
+      "riotId": "JogadorDemo#BR1",
+      "championName": "Annie"
+    }
+  ],
+  "gameData": {
+    "gameTime": 12.5
+  }
+}

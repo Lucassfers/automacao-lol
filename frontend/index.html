@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a1018">
+  <title>Rift Builds | Catálogo de builds de LoL</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css?v=21">
+  <script src="/app.js?v=28" defer></script>
+</head>
+<body>
+  <svg class="role-icons" hidden aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="role-top" viewBox="0 0 24 24">
+      <path d="M3 3h15l-3 3H6v9l-3 3z" fill="currentColor"/>
+      <path d="M21 6v15H6l3-3h9V9z" fill="currentColor" opacity=".35"/>
+      <rect x="10" y="10" width="4" height="4" fill="currentColor" opacity=".35"/>
+    </symbol>
+    <symbol id="role-jungle" viewBox="0 0 24 24">
+      <path d="M2.5 3C9 4.5 12.5 11 12 21 9.5 15 6.5 8.5 2.5 3z" fill="currentColor"/>
+      <path d="M21.5 3C15 4.5 11.5 11 12 21c2.5-6 5.5-12.5 9.5-18z" fill="currentColor"/>
+      <path d="M12 1.5c2.2 3.2 2.5 7.2 0 12-2.5-4.8-2.2-8.8 0-12z" fill="currentColor"/>
+    </symbol>
+    <symbol id="role-mid" viewBox="0 0 24 24">
+      <path d="M15 3h6v6L9 21H3v-6z" fill="currentColor"/>
+      <path d="M3 3h9L9 6H6v3l-3 3zM21 21h-9l3-3h3v-3l3-3z" fill="currentColor" opacity=".35"/>
+    </symbol>
+    <symbol id="role-adc" viewBox="0 0 24 24">
+      <path d="M21 21H6l3-3h9V9l3-3z" fill="currentColor"/>
+      <path d="M3 18V3h15l-3 3H6v9z" fill="currentColor" opacity=".35"/>
+      <rect x="10" y="10" width="4" height="4" fill="currentColor" opacity=".35"/>
+    </symbol>
+    <symbol id="role-support" viewBox="0 0 24 24">
+      <path d="M9 4h6l-1.4 5L12 11l-1.6-2z" fill="currentColor"/>
+      <path d="M2 7.5h6.2l2 2.8-3 3H4l1.4-3zM22 7.5h-6.2l-2 2.8 3 3H20l-1.4-3z" fill="currentColor"/>
+      <path d="M12 12.6l2.6 2.6-1.1 5.8h-3l-1.1-5.8z" fill="currentColor"/>
+    </symbol>
+  </svg>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#catalogo" aria-label="Rift Builds, catálogo">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <span>Rift<span class="brand-accent"> Builds</span></span>
+      </a>
+      <nav aria-label="Navegação principal">
+        <a class="nav-link" href="#catalogo" aria-current="page">Catálogo</a>
+        <button class="nav-link" type="button" id="open-guide">Como funciona</button>
+      </nav>
+      <span class="mode"><span aria-hidden="true"></span> Integração local</span>
+    </div>
+  </header>
+
+  <div class="workspace" id="catalogo">
+    <aside class="sidebar sidebar-champions" aria-labelledby="sidebar-title">
+      <div class="sidebar-heading">
+        <h2 id="sidebar-title">Campeões</h2>
+        <span class="counter" id="champion-count"></span>
+      </div>
+      <label class="search">
+        <span class="search-icon" aria-hidden="true"></span>
+        <input type="search" id="champion-search" placeholder="Buscar campeão" aria-label="Buscar campeão">
+      </label>
+      <div class="role-filter" id="own-role-filter" role="group" aria-label="Filtrar campeões por rota">
+        <button type="button" data-role="top" aria-pressed="false" aria-label="Topo" title="Topo"><svg aria-hidden="true" focusable="false"><use href="#role-top"></use></svg></button>
+        <button type="button" data-role="jungle" aria-pressed="false" aria-label="Selva" title="Selva"><svg aria-hidden="true" focusable="false"><use href="#role-jungle"></use></svg></button>
+        <button type="button" data-role="mid" aria-pressed="false" aria-label="Meio" title="Meio"><svg aria-hidden="true" focusable="false"><use href="#role-mid"></use></svg></button>
+        <button type="button" data-role="adc" aria-pressed="false" aria-label="Atirador" title="Atirador"><svg aria-hidden="true" focusable="false"><use href="#role-adc"></use></svg></button>
+        <button type="button" data-role="support" aria-pressed="false" aria-label="Suporte" title="Suporte"><svg aria-hidden="true" focusable="false"><use href="#role-support"></use></svg></button>
+      </div>
+      <div id="champions" class="champion-list" aria-label="Campeões disponíveis"></div>
+      <p class="empty" id="search-empty" hidden>Nenhum campeão encontrado.</p>
+    </aside>
+
+    <main class="main">
+      <section class="draft-panel" aria-labelledby="draft-title">
+        <h2 id="draft-title">Seleção de campeões</h2>
+        <p id="draft-status" role="status">Conectando ao cliente do LoL…</p>
+        <div id="draft-controls" hidden>
+          <p class="rate-badge draft-rate" id="draft-rate" aria-live="polite" data-tone="muted">Consultando OP.GG…</p>
+          <a id="draft-link" class="draft-link" target="_blank" rel="noopener noreferrer">Builds e runas no OP.GG ↗</a>
+        </div>
+      </section>
+      <p class="empty" id="loading" role="status">Carregando catálogo…</p>
+      <div id="catalog" hidden>
+        <section class="hero" aria-labelledby="champion-name">
+          <img class="hero-art" id="champion-art" alt="">
+          <div class="hero-overlay"></div>
+          <div class="hero-frame" aria-hidden="true"></div>
+          <div class="hero-content">
+            <p class="champion-title" id="champion-title"></p>
+            <h1 id="champion-name"></h1>
+            <p class="rate-badge hero-rate" id="champion-rate" role="status" aria-live="polite" data-tone="muted">Consultando OP.GG…</p>
+            <div class="hero-meta lane-switch" id="champion-roles" role="group" aria-label="Rota da build"></div>
+          </div>
+        </section>
+
+        <section class="recommendations" aria-labelledby="winrates-title">
+          <div class="section-heading"><div>
+            <h2 id="winrates-title">Maior taxa de vitória</h2>
+            <p id="winrates-summary"></p>
+          </div></div>
+          <div class="winrate-panels" id="winrates-cards"></div>
+        </section>
+      </div>
+      <footer>Projeto acadêmico independente <span aria-hidden="true">·</span> Artes e ícones da Riot Games</footer>
+    </main>
+
+    <aside class="sidebar sidebar-enemies" aria-labelledby="enemies-title">
+      <div class="sidebar-heading">
+        <h2 id="enemies-title">Inimigos</h2>
+        <span class="counter" id="draft-enemy-count"></span>
+      </div>
+      <div id="draft-enemies" class="champion-list draft-enemy-list" aria-label="Campeões inimigos revelados"></div>
+      <label class="search">
+        <span class="search-icon" aria-hidden="true"></span>
+        <input type="search" id="enemy-search" placeholder="Buscar inimigo" aria-label="Buscar campeão inimigo">
+      </label>
+      <div class="role-filter" id="enemy-role-filter" role="group" aria-label="Filtrar inimigos por rota">
+        <button type="button" data-role="top" aria-pressed="false" aria-label="Topo" title="Topo"><svg aria-hidden="true" focusable="false"><use href="#role-top"></use></svg></button>
+        <button type="button" data-role="jungle" aria-pressed="false" aria-label="Selva" title="Selva"><svg aria-hidden="true" focusable="false"><use href="#role-jungle"></use></svg></button>
+        <button type="button" data-role="mid" aria-pressed="false" aria-label="Meio" title="Meio"><svg aria-hidden="true" focusable="false"><use href="#role-mid"></use></svg></button>
+        <button type="button" data-role="adc" aria-pressed="false" aria-label="Atirador" title="Atirador"><svg aria-hidden="true" focusable="false"><use href="#role-adc"></use></svg></button>
+        <button type="button" data-role="support" aria-pressed="false" aria-label="Suporte" title="Suporte"><svg aria-hidden="true" focusable="false"><use href="#role-support"></use></svg></button>
+      </div>
+      <div class="tone-filter" id="enemy-tone-filter" role="group" aria-label="Filtrar inimigos pela sua taxa de vitória no confronto">
+        <button type="button" data-tone="all" aria-pressed="true">Todos</button>
+        <button type="button" data-tone="good" aria-pressed="false" title="Confrontos com sua taxa de vitória acima de 50%">Bom contra</button>
+        <button type="button" data-tone="bad" aria-pressed="false" title="Confrontos com sua taxa de vitória abaixo de 50%">Ruim contra</button>
+      </div>
+      <div id="enemy-champions" class="champion-list enemy-list" aria-label="Escolher campeão inimigo"></div>
+      <p class="empty" id="enemy-search-empty" hidden>Nenhum campeão encontrado.</p>
+    </aside>
+  </div>
+
+  <dialog id="guide" aria-labelledby="guide-title">
+    <form method="dialog" class="dialog-top">
+      <h2 id="guide-title">Como funciona</h2>
+      <button class="close" aria-label="Fechar">×</button>
+    </form>
+    <p>Escolha qualquer campeão para ver a build e as runas de maior taxa de vitória ou abrir as builds e runas no OP.GG.</p>
+    <p>Durante a seleção de campeões, o painel acompanha sua escolha e os inimigos revelados. Os inimigos aparecem na coluna Inimigos, à direita; nela você também pode escolher um adversário manualmente, mesmo sem o cliente aberto, para ver o confronto e as builds e runas do OP.GG.</p>
+    <p>Os botões de rota abaixo do nome do campeão mostram em quais rotas ele é jogado e quanto (segundo o OP.GG); clique em uma para ver a build e as runas dessa rota.</p>
+    <p>Os ícones de rota abaixo de cada busca filtram a lista; clique de novo no ícone ativo para ver todos. Ao escolher seu campeão, os inimigos já aparecem filtrados pela rota dele.</p>
+    <p>Na coluna Inimigos, use "Bom contra" para ver os campeões contra os quais seu campeão vence mais de 50% das partidas, ou "Ruim contra" para os que ficam abaixo de 50%, segundo o OP.GG.</p>
+    <p>Para enviar builds ao Discord durante a partida, configure o monitor e execute <code>python app.py</code>.</p>
+  </dialog>
+</body>
+</html>

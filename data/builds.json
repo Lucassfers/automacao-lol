@@ -1,0 +1,94 @@
+[
+  {
+    "champion": "Annie",
+    "role": "mid",
+    "patch": "geral",
+    "name": "Dano explosivo",
+    "items": ["Companheiro de Luden", "Chama Sombria", "Capuz da Morte de Rabadon"],
+    "note": "Opção para concentrar dano em um combo."
+  },
+  {
+    "champion": "Annie",
+    "role": "mid",
+    "patch": "geral",
+    "name": "Proteção após iniciar",
+    "items": ["Companheiro de Luden", "Ampulheta de Zhonya", "Capuz da Morte de Rabadon"],
+    "note": "Opção com estase para se proteger após entrar na luta."
+  },
+  {
+    "champion": "Ahri",
+    "role": "mid",
+    "patch": "geral",
+    "name": "Controle e mobilidade",
+    "items": ["Malignância", "Chama Sombria", "Capuz da Morte de Rabadon"],
+    "note": "Opção de referência para jogar em torno da ultimate."
+  },
+  {
+    "champion": "Garen",
+    "role": "top",
+    "patch": "geral",
+    "name": "Lutador",
+    "items": ["Quebrapassos", "Cutelo Negro", "Sinal de Sterak"],
+    "note": "Opção de referência para lutas prolongadas."
+  },
+  {
+    "champion": "Gangplank",
+    "role": "mid",
+    "patch": "geral",
+    "name": "Crítico no Meio",
+    "items": [
+      "Colhedor de Essência", "Botas Ionianas da Lucidez", "A Coletora",
+      "Gume do Infinito", "Lembranças do Lorde Dominik", "Sedenta por Sangue"
+    ],
+    "note": "Build de referência para Gangplank no Meio.",
+    "reference": {
+      "build": {
+        "ids": [3508, 3158, 6676, 3031, 3036, 3072],
+        "starting": [1055, 2003],
+        "spells": [4, 14],
+        "skills": ["E", "Q", "W", "Q", "Q", "R", "Q", "E", "Q", "E", "R", "E", "E", "W", "W", "R", "W", "W"]
+      },
+      "runes": {
+        "ids": [8992, 8275, 8210, 8237, 9105, 8017],
+        "shards": [5008, 5008, 5011]
+      }
+    },
+    "matchup_references": {
+      "Vladimir": {
+        "item_ids": [3508, 3158, 6676, 3031, 3033, 3072],
+        "note": "Opção com Lembrete Mortal para reduzir a cura do Vladimir."
+      }
+    }
+  },
+  {
+    "champion": "Thresh",
+    "role": "support",
+    "patch": "geral",
+    "name": "Proteção e iniciação",
+    "items": [
+      "Trenó do Solstício", "Botas da Rapidez", "Medalhão dos Solari de Ferro",
+      "Juramento do Cavaleiro", "Convergência de Zeke", "Coração Congelado"
+    ],
+    "note": "Build de referência para Thresh Suporte.",
+    "champion_rates": {
+      "patch": "16.21",
+      "scope": "Esmeralda+ · Solo/Duo · todas as regiões",
+      "source": "Mobalytics",
+      "url": "https://mobalytics.gg/lol/champions/thresh/counters/support/vs-pyke",
+      "general": {"rate": 0.519, "games": 141128},
+      "matchups": {"Pyke": {"rate": 0.538, "games": 4807}}
+    },
+    "reference": {
+      "build": {
+        "ids": [3876, 3009, 3190, 3109, 3050, 3110],
+        "starting": [3865, 2003, 2003],
+        "spells": [4, 14],
+        "skills": ["Q", "E", "W", "Q", "Q", "R", "Q", "E", "Q", "E", "R", "E", "E", "W", "W", "R", "W", "W"]
+      },
+      "runes": {
+        "ids": [8439, 8463, 8473, 8242, 8345, 8347],
+        "shards": [5008, 5008, 5001]
+      }
+    }
+  }
+]
