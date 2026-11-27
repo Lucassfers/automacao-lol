@@ -10,10 +10,14 @@ Projeto acadêmico: assistente de builds de League of Legends. A pasta não é r
 - `opgg.py`: faz o scraping da página `op.gg/lol/champions/<c>/counters/<rota>` (Esmeralda+, Solo/Duo, global) e extrai a taxa geral e os matchups `{rate, games}` do ponto de vista do campeão. Cache de 10 min (`lru_cache` + janela).
 - `winrates.py`: importa partidas Match-V5 (com `RIOT_API_KEY`) e gera `data/winrates.json` com a melhor build e as melhores runas por campeão/rota/adversário.
 - `dashboard.py`: servidor HTTP local (`127.0.0.1:8765`) com os endpoints `/api/draft`, `/api/opgg/counters`, `/api/builds|champions|gear|winrates` e os arquivos estáticos de `frontend/`. Opcionalmente, abre o OP.GG no navegador ao confirmar o pick.
-- `frontend/`: SPA em JS puro (`app.js`), com lista de campeões, quadro do draft (poll de 2 s), banner, cartões "Maior taxa de vitória" e builds do catálogo.
+- `frontend/`: SPA em JS puro com módulos ES nativos (sem build), com lista de campeões, quadro do draft (poll de 2 s), banner, cartões "Maior taxa de vitória" e builds do catálogo. Entrada `index.html` → `js/main.js` (T-015; antes era um único `app.js`). Camadas, sem ciclos de import (core → services → components → app → main):
+  - `js/core/`: `state.js` (objeto `state` único e mutável), `constants.js`, `dom.js`, `format.js`, `urls.js`, `storage.js` (sessionStorage `rift-*`), `selectors.js` (dono do painel, rota ativa, inimigo atual, taxas do OP.GG), `reference-build.js` e `refresh.js` (indireção do `refresh()` para componentes e serviços).
+  - `js/services/`: `api.js` (fetch ao `dashboard.py`), `opgg.js` (`readOpgg` com cache por slot) e `draft-poller.js` (poll do `/api/draft`).
+  - `js/components/`: colunas de campeões e inimigos, filtros, hero, abas e cartões "Maior taxa de vitória", runas, itens, selva e ordem de habilidades.
+  - `js/app/`: `controller.js` (`refresh`, `renderDraft`, `renderMatchup`, `renderOverview`) e `loaders.js` (carga do catálogo, taxas e rotas).
 
 ## Fluxos
-1. Draft: LCU → `draft.py` → `/api/draft` → `app.js` (`renderDraft`/`renderMatchup`) → `/api/opgg/counters` → taxas na tela.
+1. Draft: LCU → `draft.py` → `/api/draft` → `js/services/draft-poller.js` → `js/app/controller.js` (`renderDraft`/`renderMatchup`) → `/api/opgg/counters` → taxas na tela.
 2. Partida: Live Client → `app.py` → Discord.
 3. Estatísticas: Riot Match-V5 → `winrates.py` → `data/winrates.json` → painel.
 

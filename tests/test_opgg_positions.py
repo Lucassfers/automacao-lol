@@ -212,5 +212,26 @@ class PositionsEndpointTest(unittest.TestCase):
         self.assertEqual(body, {"error": "OP.GG indisponível no momento."})
 
 
+class FrontendModulesTest(unittest.TestCase):
+    """T-015: o frontend em módulos ES sai com tipo JavaScript e sem cache forte."""
+
+    def setUp(self):
+        handler = partial(dashboard.DashboardHandler, draft_client=Monitor(), champion_ids=set())
+        dashboard.DashboardHandler.log_message = lambda *args: None
+        self.server = ThreadingHTTPServer(("127.0.0.1", 0), handler)
+        Thread(target=self.server.serve_forever, daemon=True).start()
+        self.base = f"http://127.0.0.1:{self.server.server_port}"
+
+    def tearDown(self):
+        self.server.shutdown()
+        self.server.server_close()
+
+    def test_main_module_served_as_javascript_without_cache(self):
+        with urlopen(f"{self.base}/js/main.js", timeout=5) as response:
+            self.assertEqual(response.status, 200)
+            self.assertIn("javascript", response.headers["Content-Type"])
+            self.assertEqual(response.headers["Cache-Control"], "no-cache")
+
+
 if __name__ == "__main__":
     unittest.main()
