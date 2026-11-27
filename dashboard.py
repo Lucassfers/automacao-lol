@@ -92,6 +92,8 @@ class DraftMonitor:
 
 
 class DashboardHandler(SimpleHTTPRequestHandler):
+    extensions_map = {**SimpleHTTPRequestHandler.extensions_map, ".js": "application/javascript"}
+
     def __init__(self, *args, draft_client, champion_ids, components=frozenset(), **kwargs):
         self.draft_client = draft_client
         self.champion_ids = champion_ids
@@ -171,7 +173,8 @@ class DashboardHandler(SimpleHTTPRequestHandler):
         self.wfile.write(payload)
 
     def end_headers(self):
-        if urlsplit(self.path).path in {"/", "/index.html", "/app.js", "/styles.css"}:
+        path = urlsplit(self.path).path
+        if path in {"/", "/index.html", "/styles.css"} or path.startswith("/js/"):
             self.send_header("Cache-Control", "no-cache")
         super().end_headers()
 
