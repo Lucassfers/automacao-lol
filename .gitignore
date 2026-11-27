@@ -6,3 +6,4 @@ riotgames.pem
 data/winrates.json
 data/winrates.tmp
 .pytest_cache/
+docs/tasks/
