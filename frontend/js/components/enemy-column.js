@@ -3,7 +3,7 @@ import { roleNames } from "../core/constants.js";
 import { byId, dom } from "../core/dom.js";
 import { matchupPercent, rateTone, roleName } from "../core/format.js";
 import { refresh } from "../core/refresh.js";
-import { draftOwns, opggRate, ownDefaultRole, ownRoleKey } from "../core/selectors.js";
+import { draftOwns, liveDraftSig, opggRate, ownDefaultRole, ownRoleKey } from "../core/selectors.js";
 import { state } from "../core/state.js";
 import { saveEnemyTone, setManualEnemy } from "../core/storage.js";
 import { championButton, renderChampionPicker } from "./champion-picker.js";
@@ -64,11 +64,11 @@ export function renderEnemyPicker() {
       return Number.isFinite(rate) && (tone === "good" ? rate > 0.5 : rate < 0.5);
     },
     order: tone === "all" ? null : (a, b) => (tone === "good" ? rateOf(b.id) - rateOf(a.id) : rateOf(a.id) - rateOf(b.id)),
-    isPressed: ({ id }) => id === state.manualEnemy,
+    isPressed: ({ id }) => id === state.manualEnemy?.id,
     rateText: ({ id }) => enemyRateText(id),
     title: ({ name }, pressed) => (pressed ? `Clique de novo para limpar a escolha de ${name}` : `Escolher ${name} como adversário`),
     onPick: ({ id }) => {
-      setManualEnemy(state.manualEnemy === id ? null : id);
+      setManualEnemy(state.manualEnemy?.id === id ? null : { id, sig: liveDraftSig() });
       refresh();
     },
   });

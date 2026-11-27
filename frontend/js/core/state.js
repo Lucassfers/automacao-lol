@@ -12,8 +12,11 @@ export const state = {
   draft: {},
   savedMatchup: null,
   selectedEnemy: null,
-  // Inimigo escolhido à mão na coluna Inimigos; o poll do draft nunca o apaga.
+  // Inimigo escolhido à mão na coluna Inimigos: {id, sig}. sig identifica a seleção de campeões ao vivo
+  // no momento do clique (null fora de draft); vale até começar outra seleção.
   manualEnemy: null,
+  // Último status conclusivo do /api/draft, para notar o início de uma seleção nova.
+  lastDraftStatus: "",
   // Campeão escolhido à mão na lista da esquerda enquanto há um campeão no draft: {id, sig}. Vale até o
   // draft ao vivo mudar (sig diferente) ou o usuário clicar no próprio campeão do draft.
   manualChampion: null,

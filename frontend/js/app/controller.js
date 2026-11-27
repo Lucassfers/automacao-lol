@@ -2,9 +2,9 @@
 import { draftStatusTexts } from "../core/constants.js";
 import { byId } from "../core/dom.js";
 import { roleName } from "../core/format.js";
-import { activeRole, currentEnemy, draftOwns, draftPhase, draftSig } from "../core/selectors.js";
+import { activeRole, currentEnemy, draftOwns, draftPhase, draftSessionSig, draftSig, enemyNote } from "../core/selectors.js";
 import { state } from "../core/state.js";
-import { clearMatchup, saveMatchup, setLaneChoice, setManualChampion } from "../core/storage.js";
+import { clearMatchup, saveMatchup, setLaneChoice, setManualChampion, setManualEnemy } from "../core/storage.js";
 import { buildUrl } from "../core/urls.js";
 import { readOpggCounters } from "../services/opgg.js";
 import { renderEnemyColumn } from "../components/enemy-column.js";
@@ -18,7 +18,7 @@ import { renderWinrates } from "../components/winrates.js";
 // na coluna Inimigos.
 export function renderOverview() {
   const enemy = currentEnemy();
-  const opponent = enemy ? ` Adversário: ${enemy.name}${state.manualEnemy ? " (escolha manual)" : ""}.` : "";
+  const opponent = enemy ? ` Adversário: ${enemy.name}${enemyNote(enemy)}.` : "";
   if (state.manualChampion && state.draft.status === "active" && state.draft.champion) {
     const name = state.draft.champion.name;
     byId("draft-status").textContent = `Exibindo ${state.selected} (escolha manual). Draft: ${name} · ${draftPhase()}`
@@ -54,7 +54,7 @@ export function renderMatchup() {
   link.textContent = enemy ? `Builds e runas vs. ${enemy.name} ↗` : "Builds e runas gerais no OP.GG ↗";
 
   const own = `${state.draft.champion.name}${role ? ` · ${roleName(role)}` : ""} · ${draftPhase()}`;
-  const matchup = enemy ? `Confronto com ${enemy.name}${state.manualEnemy ? " (escolha manual)" : ""}.`
+  const matchup = enemy ? `Confronto com ${enemy.name}${enemyNote(enemy)}.`
     : !enemies.length ? "Aguardando escolhas inimigas reveladas." : "Selecione seu adversário de rota.";
   byId("draft-status").textContent = `${own}. ${matchup}`;
   renderWinrates(enemy, statsRole);
@@ -64,6 +64,10 @@ export function renderMatchup() {
 }
 
 export function renderDraft(snapshot) {
+  // Seleção nova: o status volta a "active" depois de "waiting" ou "offline". "unavailable" e
+  // "certificate" são falhas transitórias (no meio do draft ou no primeiro poll após o F5) e não contam.
+  const draftStarted = snapshot.status === "active" && ["waiting", "offline"].includes(state.lastDraftStatus);
+  if (["active", "waiting", "offline"].includes(snapshot.status)) state.lastDraftStatus = snapshot.status;
   if (snapshot.status !== "active" && state.savedMatchup?.snapshot?.champion) {
     snapshot = { ...state.savedMatchup.snapshot, archived: true };
   }
@@ -84,6 +88,11 @@ export function renderDraft(snapshot) {
     const sig = draftSig(snapshot);
     if (state.manualChampion && state.manualChampion.sig !== sig) setManualChampion(null);
     if (state.laneChoice?.sig && state.laneChoice.sig !== sig) setLaneChoice(null);
+    // A partida em andamento continua a seleção; nela o inimigo manual se mantém.
+    const enemySig = draftSessionSig(snapshot);
+    if (state.manualEnemy && !snapshot.in_game && (state.manualEnemy.sig !== enemySig || (draftStarted && !snapshot.session))) {
+      setManualEnemy(null);
+    }
   }
   if (state.manualChampion && !state.champions.some(({ id }) => id === state.manualChampion.id)) setManualChampion(null);
   const championChanged = state.draft.champion?.id !== snapshot.champion?.id;

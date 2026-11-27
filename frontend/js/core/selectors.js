@@ -1,10 +1,23 @@
 // Seletores derivados do estado: dono do painel (draft ou escolha manual), rota ativa, inimigo atual e taxas do OP.GG.
+import { roleNames } from "./constants.js";
+import { assignEnemyRoles } from "./enemy-roles.js";
 import { roleName } from "./format.js";
 import { state } from "./state.js";
 
 // Assinatura do campeão do draft: muda com novo pick, confirmação ou troca de rota.
 export function draftSig(snapshot) {
   return snapshot.champion ? `${snapshot.champion.id}|${snapshot.role ?? ""}|${Boolean(snapshot.confirmed)}` : "";
+}
+
+// Identidade da seleção de campeões: o id da sessão do LCU ou, sem ele, a rota do draft (a troca de
+// seleção com a mesma rota é notada pela volta do status a "active").
+export function draftSessionSig(snapshot) {
+  return snapshot.session ? `s:${snapshot.session}` : `r:${snapshot.role ?? ""}`;
+}
+
+// Seleção ao vivo para amarrar a escolha manual do inimigo; null fora de draft.
+export function liveDraftSig() {
+  return state.draft.status === "active" && !state.draft.archived && !state.draft.in_game ? draftSessionSig(state.draft) : null;
 }
 
 // O draft manda no painel enquanto tem campeão e o usuário não escolheu outro à mão.
@@ -48,15 +61,31 @@ export function ownRoleKey() {
   return `${state.selectedId}|${activeRole()}`;
 }
 
+// Adversário de rota pelo draft: o único inimigo na sua rota, real (LCU) ou estimada (OP.GG).
+export function inferredEnemy() {
+  if (!state.draft.role) return null;
+  const enemies = state.draft.enemies ?? [];
+  const roles = assignEnemyRoles(enemies, state.championPositions, state.championRates, Object.keys(roleNames));
+  const inferred = enemies.filter((row) => roles.get(row.id) === state.draft.role);
+  return inferred.length === 1 ? inferred[0] : null;
+}
+
 export function currentEnemy() {
   const enemies = state.draft.enemies ?? [];
   if (state.manualEnemy) {
-    return enemies.find((row) => row.id === state.manualEnemy) ?? state.champions.find(({ id }) => id === state.manualEnemy) ?? null;
+    const id = state.manualEnemy.id;
+    return enemies.find((row) => row.id === id) ?? state.champions.find((champion) => champion.id === id) ?? null;
   }
   // Com campeão escolhido à mão, a rota do draft não indica o adversário dele.
   if (state.manualChampion) return enemies.find((row) => row.id === state.selectedEnemy) ?? null;
-  const inferred = enemies.filter((row) => state.draft.role && row.role === state.draft.role);
-  return enemies.find((row) => row.id === state.selectedEnemy) ?? (inferred.length === 1 ? inferred[0] : null);
+  return enemies.find((row) => row.id === state.selectedEnemy) ?? inferredEnemy();
+}
+
+// Origem do adversário no texto de status: escolha manual ou rota estimada pelo OP.GG.
+export function enemyNote(enemy) {
+  if (state.manualEnemy) return " (escolha manual)";
+  if (!state.manualChampion && !enemy.role && enemy.id !== state.selectedEnemy && enemy === inferredEnemy()) return " (rota estimada)";
+  return "";
 }
 
 export function opggStatusText(request) {

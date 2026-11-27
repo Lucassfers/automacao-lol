@@ -1,4 +1,5 @@
 import base64
+import hashlib
 import http.client
 import json
 import os
@@ -15,6 +16,16 @@ ROLES = {
     "top": "top", "jungle": "jungle", "middle": "mid", "mid": "mid",
     "bottom": "adc", "bot": "adc", "adc": "adc", "utility": "support", "support": "support",
 }
+
+
+def session_key(session):
+    """Identificador estável da seleção de campeões, resumido em hash; None se o LCU não expuser nenhum."""
+    chat = session.get("chatDetails") or {}
+    game = session.get("gameId")
+    for value in (session.get("id"), chat.get("multiUserChatId"), chat.get("chatRoomName"), game if game else None):
+        if isinstance(value, (str, int)) and not isinstance(value, bool) and str(value).strip():
+            return hashlib.sha256(str(value).encode()).hexdigest()[:16]
+    return None
 
 
 def draft_snapshot(session, champions):
@@ -60,6 +71,7 @@ def draft_snapshot(session, champions):
         "confirmed": confirmed,
         "role": ROLES.get((player.get("assignedPosition") or "").lower()),
         "enemies": list(enemies.values()),
+        "session": session_key(session),
     }
 
 

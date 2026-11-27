@@ -26,7 +26,7 @@ export function restoreSession() {
     // O painel também funciona em sessões sem armazenamento.
   }
   try {
-    state.manualEnemy = sessionStorage.getItem("rift-enemy") || null;
+    state.manualEnemy = parseManualEnemy(sessionStorage.getItem("rift-enemy"));
   } catch {
     // Sem armazenamento, a escolha manual vale só enquanto a página estiver aberta.
   }
@@ -54,14 +54,23 @@ export function saveWinrateTab() {
   }
 }
 
-export function setManualEnemy(id) {
-  state.manualEnemy = id || null;
+// Lê o inimigo manual salvo; o formato antigo (só o id) vale como escolha feita fora de draft.
+export function parseManualEnemy(raw) {
+  if (!raw) return null;
+  let saved;
   try {
-    if (state.manualEnemy) sessionStorage.setItem("rift-enemy", state.manualEnemy);
-    else sessionStorage.removeItem("rift-enemy");
+    saved = JSON.parse(raw);
   } catch {
-    // Armazenamento indisponível.
+    return { id: raw, sig: null };
   }
+  if (typeof saved === "string") return saved ? { id: saved, sig: null } : null;
+  if (typeof saved?.id !== "string" || !saved.id) return null;
+  return { id: saved.id, sig: typeof saved.sig === "string" ? saved.sig : null };
+}
+
+export function setManualEnemy(value) {
+  state.manualEnemy = value?.id ? value : null;
+  storeJson("rift-enemy", state.manualEnemy);
 }
 
 export function storeJson(key, value) {
